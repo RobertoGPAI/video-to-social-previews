@@ -17,7 +17,7 @@ This project is an automation script that let's you generate:
 5. Create a whisper docker container locally by running the following:
 ```bash
 docker build -t whispercpp-api .
-docker run -d --name whisper --restart unless-stopped -p 9000:9000 -v "$PWD/models:/models" whispercpp-api
+docker run -d --name whisper --restart unless-stopped -p 9000:9000  whispercpp-api
 ```
 6. (Optional if you're not using openai) Create a locally running Ollama server and pull a compatible model (e.g. `gpt-4o-mini`):
    ```bash

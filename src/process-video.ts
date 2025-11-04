@@ -75,7 +75,7 @@ const YouTubeSchema = z.object({
   chapters: ChaptersSchema.optional(),
 });
 const SocialSchema = z.object({
-  x: z.object({ main: z.string().max(260), thread: z.array(z.string().max(260)).max(3).optional() }),
+  x: z.object({ main: z.string().max(280), thread: z.array(z.string().max(280)).max(3).optional() }),
   bluesky: z.object({ post: z.string().max(300) }),
   linkedin: z.object({ post: z.string().min(50), hashtags: z.array(z.string()).max(10).optional() }),
   reddit: z.object({ title: z.string().min(10).max(180), body: z.string().min(50) }),
@@ -87,10 +87,11 @@ export type Output = z.infer<typeof OutputSchema>;
 async function chatJSON<T>(messages: any[]): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (LLM_API_KEY) headers.Authorization = `Bearer ${LLM_API_KEY}`;
+  console.log('LLM request to', LLM_ENDPOINT, 'with model', LLM_MODEL);
   const res = await fetch(LLM_ENDPOINT, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ model: LLM_MODEL, messages, temperature: 0.5 }),
+    body: JSON.stringify({ model: LLM_MODEL, messages, }),
   });
   if (!res.ok) throw new Error(`LLM error ${res.status}: ${await res.text()}`);
   const data = await res.json();
@@ -98,6 +99,7 @@ async function chatJSON<T>(messages: any[]): Promise<T> {
   if (!content) throw new Error('Empty LLM response');
   const match = content.match(/```json\n([\s\S]*?)\n```/m) || content.match(/\{[\s\S]*\}$/m);
   const jsonText = match ? (match[1] ?? match[0]) : content;
+
   try {
     try { return JSON.parse(jsonText) as T; }
     catch { return JSON.parse(jsonText.replace(/,\s*([}\]])/g, '$1')) as T; }
@@ -111,15 +113,23 @@ function makeSystemPrompt() {
   You are a YouTube strategist and social copywriter. 
   The videos are coding related tutorials or explainers.
 
+  IMPORTANT: Do not make up information about the video that is not in the transcript. Only use what is provided. Decipher the content as accurately as possible from
+  the transcript before making assumptions about the content. The transcript contains all the information you need to complete the task.
+
+  When creating social texts try to make them engaging and clickable, using relevant hashtags where appropriate, also try to make it
+  catchy to attract viewers. The copy should contain exactly what is in the transcript summarized in an engaging way, it should not
+  contain any made up or irrelevant information. Try to make it a bit more expansive than 1-2 sentences to give more context and use
+  emojis, bullet lists to engage the audience.
+
   I want you to come up with a title for the video based on the transcript and make it catchy and engaging. (clickbait style is ok)
   Then, generate a YouTube description that summarizes the video content, includes relevant keywords, and has a call to action.
   Also, create a list of 5-25 relevant tags for the video. The tags should be single words or short phrases without the '#' symbol.
   
-  Create chapters for the content if possible, with timestamps in MM:SS format, the chapters should cover the main sections of the video and you
+  Create YouTube chapters for the content if possible, with timestamps in MM:SS format, the chapters should cover the main sections of the video and you
   should aim for 3-10 chapters depending on the length of the video. The name of the chapter should be descriptive of what the transcript section covers.
 
   Additionally, create social media copy for the following platforms:
-  - X (Twitter): A main tweet (<= 260 chars) and up to 3 follow-up tweets for a thread.
+  - X (Twitter): A main tweet (<= 280 chars) and up to 3 follow-up tweets for a thread.
   - Bluesky: A post (<= 300 chars) summarizing the video.
   - LinkedIn: A post (>= 50 chars) with relevant hashtags (up to 10).
   - Reddit: A title (10-180 chars) and body (>= 50 chars) suitable for a relevant subreddit.
@@ -135,18 +145,18 @@ function makeSystemPrompt() {
       "chapters": [{"start": "00:00", "title": "Introduction"}, {"start": "02:15", "title": "Main Topic"}, "..."]
     },
     "socials": {
-      "x": {"main": "Main tweet content...", "thread": ["Follow-up tweet 1...", "..."]},
+      "x": {"main": "This will blow your mind! ...", "thread": ["Follow-up tweet 1...", "..."]},
       "bluesky": {"post": "Bluesky post content..."},
       "linkedin": {"post": "LinkedIn post content...", "hashtags": ["hashtag1", "..."]},
       "reddit": {"title": "Reddit post title...", "body": "Reddit post body..."}
     }
   }
-  Do not add any explanations outside the JSON.
+  Do not add any explanations outside the JSON. Adhere to the structure strictly and more is preferred to less.
 
   `;
 }
 function makeUserPrompt(videoTitle: string, transcript: string) {
-  return `Video title (raw): ${videoTitle}\nTranscript (may be truncated):\n${transcript}`;
+  return ` \nTranscript of the video:\n${transcript}`;
 }
 
 // ---- Audio extraction
@@ -184,33 +194,16 @@ async function transcribeViaApi(wavPath: string, outDir: string) {
   return { srtText, transcriptText };
 }
 
-// ---- Fallback: local whisper.cpp binary
-async function transcribeViaBinary(wavPath: string, outDir: string) {
-  if (!WHISPER_BIN || !WHISPER_MODEL) {
-    throw new Error('Set WHISPER_BIN and WHISPER_MODEL to use the local binary (or set WHISPER_API_URL to use the container).');
-  }
-  const out = path.join(outDir, 'transcript');
-  const args = ['-m', WHISPER_MODEL, '-f', wavPath, '-oj', '-osrt', '-of', out];
-  if (WHISPER_API_WORD_TS === 'true') args.push('-owts');
-  args.push('-t', String(WHISPER_THREADS), '-bs', String(WHISPER_BEAM_SIZE));
-  if (WHISPER_API_LANGUAGE) args.push('-l', WHISPER_API_LANGUAGE);
-  await execa(WHISPER_BIN, args, { stdio: 'inherit' });
-  const srtText = await fs.readFile(out + '.srt', 'utf8');
-  const jsonText = await fs.readFile(out + '.json', 'utf8');
-  const parsed = JSON.parse(jsonText);
-  const transcriptText: string = parsed.text || (parsed.segments?.map((s: any) => s.text).join(' ') ?? srtText);
 
-  return { srtText, transcriptText };
-}
 
 async function transcribeSmart(wavPath: string, outDir: string) {
-  if (WHISPER_API_URL) return transcribeViaApi(wavPath, outDir);
-  return transcribeViaBinary(wavPath, outDir);
+  return transcribeViaApi(wavPath, outDir);
+
 }
 
 async function generateOutputs({ titleGuess, transcript }: { titleGuess: string; transcript: string; }) {
-  const MAX = 12000;
-  const shortTx = transcript.length > MAX ? transcript.slice(0, MAX) + '\n...[truncated]' : transcript;
+  //const MAX = 12000;
+  const shortTx = transcript;
   const raw = await chatJSON<any>([
     { role: 'system', content: makeSystemPrompt() },
     { role: 'user', content: makeUserPrompt(titleGuess, shortTx) },
@@ -261,8 +254,8 @@ async function extractAudioAndProcess(mp4Path: string, transcriptOnly = false) {
     console.log('- transcript.srt / transcript.txt');
     return;
   }
-
   console.log('[3/4] Generating metadata & social copy with LLM');
+
   const outputs = await generateOutputs({ titleGuess: base, transcript: transcriptText });
 
   console.log('[4/4] Writing files');

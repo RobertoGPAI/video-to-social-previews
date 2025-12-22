@@ -283,7 +283,7 @@ async function extractAudioAndProcess(mp4Path: string, transcriptOnly = false) {
     console.log(`[3/${totalSteps}] Writing transcript files`);
     await ensureDir(outBase);
     await fs.writeFile(path.join(outBase, 'transcript.srt'), srtText, 'utf8');
-    await fs.writeFile(path.join(outBase, 'transcript.txt'), transcriptText, 'utf8');
+    await fs.writeFile(path.join(outBase, 'transcript.txt'), srtText, 'utf8');
 
     console.log(`\nDone. Open ${outBase} for:`);
     console.log('- transcript.srt / transcript.txt');
@@ -291,10 +291,10 @@ async function extractAudioAndProcess(mp4Path: string, transcriptOnly = false) {
   }
   console.log('[3/4] Generating metadata & social copy with LLM');
 
-  const outputs = await generateOutputs({ titleGuess: base, transcript: transcriptText });
+  const outputs = await generateOutputs({ titleGuess: base, transcript: srtText });
 
   console.log('[4/4] Writing files');
-  await writeOutputs(outBase, outputs, srtText, transcriptText);
+  await writeOutputs(outBase, outputs, srtText, srtText);
 
   console.log(`\nDone. Open ${outBase} for:`);
   console.log('- youtube.md (title/description/tags/chapters)');

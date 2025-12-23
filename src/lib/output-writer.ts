@@ -44,7 +44,7 @@ function formatYouTubeMarkdown(out: Output): string {
 
   if (out.youtube.chapters?.length) {
     md += `**Chapters**\n\n`;
-    md += out.youtube.chapters.map(c => `- ${c.start} — ${c.title}`).join('\n');
+    md += out.youtube.chapters.map(c => `${c.start} — ${c.title}`).join('\n');
     md += '\n';
   }
 

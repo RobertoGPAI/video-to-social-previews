@@ -44,6 +44,26 @@ export function makeSystemPrompt(): string[] {
     * Uses bullet points and formatting for readability
     * If code is mentioned in the transcript, recreate it accurately in the blog post
 
+  
+  Example output:
+  {
+    "youtube": {
+      "title": "Your Catchy Video Title",
+      "description": "A well-crafted description of the video content...",
+      "tags": ["tag1", "tag2", "..."],
+      "chapters": [{"start": "00:00", "title": "Introduction"}, {"start": "02:15", "title": "Main Topic"}, "..."]
+    },
+    "socials": {
+      "x": {"main": "This will blow your mind! ...", "thread": ["Follow-up tweet 1...", "..."]},
+      "bluesky": {"post": "Bluesky post content..."},
+      "linkedin": {"post": "LinkedIn post content...", "hashtags": ["hashtag1", "..."]},
+      "reddit": {"title": "Reddit post title...", "body": "Reddit post body..."}
+    },
+    "blog": {
+      "title": "Your Blog Post Title",
+      "content": "# Your Blog Post Title\\n\\n## Introduction\\n\\nContent here...\\n\\n## Main Section\\n\\nMore content...\\n\\n\`\`\`javascript\\nconst example = 'code';\\n\`\`\`\\n\\n## Conclusion\\n\\nFinal thoughts..."
+    }
+  }
    
   `,
   ];

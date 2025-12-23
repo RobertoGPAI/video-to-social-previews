@@ -7,6 +7,8 @@ This project is an automation script that let's you generate:
 - Social media posts based on the transcript.
 - Blog post based on the transcript.
 
+  The automation workflow uses TanStack AI to generate all of this via structured outputs and transcription API's
+
 ## Setup
 1. Clone the repository to your local machine.
 2. Navigate to the project directory.
@@ -30,4 +32,5 @@ docker run -d --name whisper --restart unless-stopped -p 9000:9000  whispercpp-a
    npm run generate ./inbox/your-video-file.mp4
    # Or to just generate the transcript:
    npm run generate ./inbox/your-video-file.mp4 --transcript-only
+
    ```

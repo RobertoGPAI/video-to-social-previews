@@ -1,21 +1,30 @@
 {
   "name": "automation",
   "version": "1.0.0",
-  "description": "automation for yt videos",
+  "description": "automation for yt videos built with tanstack/ai",
   "license": "MIT",
   "author": "AlemTuzlak",
   "type": "module",
   "main": "index.ts",
+  "keywords": [
+    "ai",
+    "tanstack ai",
+    "ai sdk",
+    "ai transcribe",
+    "ai chat",
+    "ai structured outputs"
+  ],
   "scripts": {
     "generate": "tsx src/process-video.ts"
   },
   "dependencies": {
+    "@standard-schema/spec": "^1.1.0",
     "@tanstack/ai": "^0.2.0",
     "@tanstack/ai-ollama": "^0.2.0",
     "@tanstack/ai-openai": "^0.2.0",
     "dotenv": "^17.2.3",
     "execa": "^9.6.0",
-    "zod": "^4.1.12"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^24.9.2",

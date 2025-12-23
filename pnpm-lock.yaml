@@ -8,15 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@standard-schema/spec':
+        specifier: ^1.1.0
+        version: 1.1.0
       '@tanstack/ai':
         specifier: ^0.2.0
         version: 0.2.0
       '@tanstack/ai-ollama':
         specifier: ^0.2.0
-        version: 0.2.0(@tanstack/ai@0.2.0)(zod@4.1.12)
+        version: 0.2.0(@tanstack/ai@0.2.0)(zod@4.2.1)
       '@tanstack/ai-openai':
         specifier: ^0.2.0
-        version: 0.2.0(@tanstack/ai@0.2.0)(zod@4.1.12)
+        version: 0.2.0(@tanstack/ai@0.2.0)(zod@4.2.1)
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -24,8 +27,8 @@ importers:
         specifier: ^9.6.0
         version: 9.6.0
       zod:
-        specifier: ^4.1.12
-        version: 4.1.12
+        specifier: ^4.2.1
+        version: 4.2.1
     devDependencies:
       '@types/node':
         specifier: ^24.9.2
@@ -202,6 +205,9 @@ packages:
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
 
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
   '@tanstack/ai-ollama@0.2.0':
     resolution: {integrity: sha512-4StABJNpgQcbCCawQSTxhGx9hk+BtG6LTqjgOfsjeDvADQqZFf2BvAkABlSGDpi/inAhtWMXT4bpNRH5tElvNw==}
     peerDependencies:
@@ -363,8 +369,8 @@ packages:
     resolution: {integrity: sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug==}
     engines: {node: '>=18'}
 
-  zod@4.1.12:
-    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
+  zod@4.2.1:
+    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
 
 snapshots:
 
@@ -450,17 +456,19 @@ snapshots:
 
   '@sindresorhus/merge-streams@4.0.0': {}
 
-  '@tanstack/ai-ollama@0.2.0(@tanstack/ai@0.2.0)(zod@4.1.12)':
+  '@standard-schema/spec@1.1.0': {}
+
+  '@tanstack/ai-ollama@0.2.0(@tanstack/ai@0.2.0)(zod@4.2.1)':
     dependencies:
       '@tanstack/ai': 0.2.0
       ollama: 0.6.3
-      zod: 4.1.12
+      zod: 4.2.1
 
-  '@tanstack/ai-openai@0.2.0(@tanstack/ai@0.2.0)(zod@4.1.12)':
+  '@tanstack/ai-openai@0.2.0(@tanstack/ai@0.2.0)(zod@4.2.1)':
     dependencies:
       '@tanstack/ai': 0.2.0
-      openai: 6.15.0(zod@4.1.12)
-      zod: 4.1.12
+      openai: 6.15.0(zod@4.2.1)
+      zod: 4.2.1
     transitivePeerDependencies:
       - ws
 
@@ -562,9 +570,9 @@ snapshots:
     dependencies:
       whatwg-fetch: 3.6.20
 
-  openai@6.15.0(zod@4.1.12):
+  openai@6.15.0(zod@4.2.1):
     optionalDependencies:
-      zod: 4.1.12
+      zod: 4.2.1
 
   parse-ms@4.0.0: {}
 
@@ -611,4 +619,4 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zod@4.1.12: {}
+  zod@4.2.1: {}

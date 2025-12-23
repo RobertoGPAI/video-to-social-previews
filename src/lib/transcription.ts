@@ -27,6 +27,7 @@ export async function transcribe(wavPath: string, outDir: string): Promise<Trans
   const result = await generateTranscription({
     adapter: whisperAdapter,
     audio: blob,
+    language: 'en',
   });
 
   // Save transcription results

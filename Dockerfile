@@ -32,7 +32,7 @@ COPY app.py .
 
 # Model + runtime config
 ENV MODELS_DIR=/models
-ENV WHISPER_MODEL=base.en
+ENV WHISPER_MODEL=base
 ENV WHISPER_THREADS=4
 ENV WHISPER_BEAM_SIZE=5
 ENV WHISPER_BIN=whisper-cli
@@ -42,7 +42,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # Download the Whisper model during build
 RUN mkdir -p /models && \
     pip install --no-cache-dir huggingface_hub && \
-    python -c "from huggingface_hub import hf_hub_download; hf_hub_download(repo_id='ggerganov/whisper.cpp', filename='ggml-base.en.bin', local_dir='/models', local_dir_use_symlinks=False)" && \
+    python -c "from huggingface_hub import hf_hub_download; hf_hub_download(repo_id='ggerganov/whisper.cpp', filename='ggml-base.bin', local_dir='/models', local_dir_use_symlinks=False)" && \
     pip uninstall -y huggingface_hub
 
 EXPOSE 9000

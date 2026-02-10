@@ -1,4 +1,3 @@
----
 
 # Automatización de Previsualizaciones de Video (Local y Español)
 
